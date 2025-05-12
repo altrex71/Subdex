@@ -1,0 +1,64 @@
+<!-- Maths Page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maths</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <nav class="bg-blue-600 p-4 text-white flex justify-center gap-6">
+    <a href="physics.html" class="hover:underline">Physics</a>
+    <a href="chemistry.html" class="hover:underline">Chemistry</a>
+    <a href="maths.html" class="hover:underline">Maths</a>
+  </nav>
+
+  <div class="max-w-6xl mx-auto p-6 text-center">
+    <h1 class="text-3xl font-bold mb-6">Maths</h1>
+    <div class="grid grid-cols-5 font-semibold bg-gray-300 p-2 rounded-t text-center">
+      <div>Chapter</div>
+      <div>Lectures</div>
+      <div>Questions</div>
+      <div>PYQs</div>
+      <div>Boards</div>
+    </div>
+
+    <script>
+      const chapters = [
+        "3D GEOMETRY", "SQUENCE & SERIES", "DEFINITE INTEGRATION", "DIFFERENTIAL EQUATIONS",
+        "VECTOR ALGEBRA", "FUNCTIONS", "STRAIGHT LINES", "BINOMIAL THEOREM", "PROBABILITY",
+        "COMPLEX NUMBER", "AREA UNDER CURVES", "LIMITS", "MATRICES", "APPLICATION OF DERIVATIVES",
+        "CIRCLE", "DETERMINANTS", "QUADRATIC EQUATION", "PnC", "SETS & RELATIONS",
+        "CONTINUITY & DIFFERENTIABILITY", "STATISTICS", "HYPERBOLA", "PARABOLA", "DIFFERENTIATION",
+        "TRIGONOMETRIC EQUATIONS", "INVERSE TRIGONOMETRIC FUNCTIONS", "ELLIPSE", "INDEFINITE INTEGRATION"
+      ];
+
+      const container = document.currentScript.parentElement;
+  chapters.forEach((chapter, index) => {
+    const row = document.createElement("div");
+    row.className = `grid grid-cols-5 border-b p-2 text-center ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`;
+    row.innerHTML = `
+      <div>${chapter}</div>
+      <div><input type="checkbox" data-col="lectures" data-id="${index}"></div>
+      <div><input type="checkbox" data-col="questions" data-id="${index}"></div>
+      <div><input type="checkbox" data-col="pyqs" data-id="${index}"></div>
+      <div><input type="checkbox" data-col="boards" data-id="${index}"></div>
+    `;
+    container.appendChild(row);
+  });
+
+  // Restore checkbox state
+  window.addEventListener('load', () => {
+    document.querySelectorAll('input[type=\"checkbox\"]').forEach(cb => {
+      const key = `${location.pathname}-${cb.dataset.col}-${cb.dataset.id}`;
+      cb.checked = localStorage.getItem(key) === 'true';
+      cb.addEventListener('change', () => {
+        localStorage.setItem(key, cb.checked);
+      });
+    });
+  });
+</script>
+  </div>
+</body>
+</html>

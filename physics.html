@@ -1,67 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Physics</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Physics Chapters</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      width: 90%;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    td input[type="checkbox"] {
+      transform: scale(1.2);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <nav class="bg-blue-600 p-4 text-white flex justify-center gap-6">
-    <a href="physics.html" class="hover:underline">Physics</a>
-    <a href="chemistry.html" class="hover:underline">Chemistry</a>
-    <a href="maths.html" class="hover:underline">Maths</a>
-  </nav>
+<body>
+  <h1>Physics Chapters</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Chapter</th>
+        <th>Lectures</th>
+        <th>Questions</th>
+        <th>PYQs</th>
+        <th>Boards</th>
+      </tr>
+    </thead>
+    <tbody id="chapter-table">
+      <!-- Rows will be inserted via JS -->
+    </tbody>
+  </table>
 
-  <div class="max-w-6xl mx-auto p-6 text-center">
-    <h1 class="text-3xl font-bold mb-6">Physics</h1>
-    <div class="grid grid-cols-5 font-semibold bg-gray-300 p-2 rounded-t text-center">
-      <div>Chapter</div>
-      <div>Lectures</div>
-      <div>Questions</div>
-      <div>PYQs</div>
-      <div>Boards</div>
-    </div>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
 
-    <!-- Chapter rows -->
-    <!-- Generated dynamically -->
-    <script>
-      const chapters = [
-        "CURRENT ELECTRICITY", "ELECTROSTATICS", "MAGNETIC EFFECTS OF CURRENT", "LAWS OF MOTION",
-        "MECHANICAL PROPERTIES OF FLUIDS", "ALTERNATING CURRENT", "GRAVITATION", "ATOMIC PHYSICS",
-        "SEMICONDUCTORS", "DUAL NATURE OF MATTER", "KINETIC THEORY OF GASES", "MOTION IN 1D",
-        "WAVE OPTICS", "RAY OPTICS", "WORK POWER ENERGY", "ROTATIONAL MOTION", "NUCLEAR PHYSICS",
-        "MATHEMATICS IN PHYSICS", "THERMODYNAMICS", "ELECTROMAGNETIC WAVES", "UNITS & DIMENSIONS",
-        "ELECTROMAGNETIC INDUCTION", "CAPACITANCE", "MECHANICAL PROPERTIES OF SOLIDS", "OSCILLATIONS",
-        "EXPERIMENTAL PHYSICS", "COM, MOMENTUN AND COLLISION", "MOTION IN 2D", "WAVES AND SOUND",
-        "THERMAL PROPERTIES OF MATTER", "MAGNETIC PROPERTIES OF MATTER", "COMMUNICATION SYSTEM"
-      ];
+  <script>
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBp3z6vpTsp5KrP2asGUpf4n0Dl0QOpx3Q",
+      authDomain: "subdex-761ff.firebaseapp.com",
+      databaseURL: "https://subdex-761ff-default-rtdb.firebaseio.com",
+      projectId: "subdex-761ff",
+      storageBucket: "subdex-761ff.firebasestorage.app",
+      messagingSenderId: "561454329970",
+      appId: "1:561454329970:web:0f20a9b5a40d3b10edd2eb",
+      measurementId: "G-STEEM7BNN1"
+    };
 
-      const container = document.currentScript.parentElement;
-  chapters.forEach((chapter, index) => {
-    const row = document.createElement("div");
-    row.className = `grid grid-cols-5 border-b p-2 text-center ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`;
-    row.innerHTML = `
-      <div>${chapter}</div>
-      <div><input type="checkbox" data-col="lectures" data-id="${index}"></div>
-      <div><input type="checkbox" data-col="questions" data-id="${index}"></div>
-      <div><input type="checkbox" data-col="pyqs" data-id="${index}"></div>
-      <div><input type="checkbox" data-col="boards" data-id="${index}"></div>
-    `;
-    container.appendChild(row);
-  });
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const userId = "defaultUser"; // use a unique ID later if needed
 
-  // Restore checkbox state
-  window.addEventListener('load', () => {
-    document.querySelectorAll('input[type=\"checkbox\"]').forEach(cb => {
-      const key = `${location.pathname}-${cb.dataset.col}-${cb.dataset.id}`;
-      cb.checked = localStorage.getItem(key) === 'true';
-      cb.addEventListener('change', () => {
-        localStorage.setItem(key, cb.checked);
-      });
+    const chapters = [
+      "CURRENT ELECTRICITY", "ELECTROSTATICS", "MAGNETIC EFFECTS OF CURRENT", "LAWS OF MOTION",
+      "MECHANICAL PROPERTIES OF FLUIDS", "ALTERNATING CURRENT", "GRAVITATION", "ATOMIC PHYSICS",
+      "SEMICONDUCTORS", "DUAL NATURE OF MATTER", "KINETIC THEORY OF GASES", "MOTION IN 1D",
+      "WAVE OPTICS", "RAY OPTICS", "WORK POWER ENERGY", "ROTATIONAL MOTION", "NUCLEAR PHYSICS",
+      "MATHEMATICS IN PHYSICS", "THERMODYNAMICS", "ELECTROMAGNETIC WAVES", "UNITS & DIMENSIONS",
+      "ELECTROMAGNETIC INDUCTION", "CAPACITANCE", "MECHANICAL PROPERTIES OF SOLIDS", "OSCILLATIONS",
+      "EXPERIMENTAL PHYSICS", "COM, MOMENTUN AND COLLISION", "MOTION IN 2D", "WAVES AND SOUND",
+      "THERMAL PROPERTIES OF MATTER", "MAGNETIC PROPERTIES OF MATTER", "COMMUNICATION SYSTEM"
+    ];
+
+    const table = document.getElementById("chapter-table");
+
+    chapters.forEach((chapter, i) => {
+      const row = document.createElement("tr");
+      const chapterCell = document.createElement("td");
+      chapterCell.textContent = chapter;
+      row.appendChild(chapterCell);
+
+      for (let j = 0; j < 4; j++) {
+        const cell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const checkboxId = `physics/checkbox-${i}-${j}`;
+        checkbox.id = checkboxId;
+
+        // Load state from Firebase
+        const ref = db.ref(`${userId}/${checkboxId}`);
+        ref.on("value", snapshot => {
+          checkbox.checked = snapshot.val() === true;
+        });
+
+        // Save state to Firebase
+        checkbox.addEventListener("change", () => {
+          ref.set(checkbox.checked);
+        });
+
+        cell.appendChild(checkbox);
+        row.appendChild(cell);
+      }
+
+      table.appendChild(row);
     });
-  });
-</script>
-  </div>
+  </script>
 </body>
 </html>
